@@ -9,6 +9,7 @@ import study.jdbc.connection.DBConnectionUtil;
 import study.jdbc.domain.Member;
 
 import java.sql.*;
+import java.util.NoSuchElementException;
 
 @Slf4j
 public class MemberRepositoryV0 {
@@ -30,6 +31,34 @@ public class MemberRepositoryV0 {
             close(con, pstmt, null);
         }
     }
+
+    public Member findById(String memberId) throws SQLException {
+        String sql = "SELECT * FROM MEMBER WHERE MEMBER_ID=?";
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, memberId);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                Member member = new Member();
+                member.setMemberId(rs.getString(1));
+                member.setMoney(rs.getInt(2));
+                return member;
+            } else {
+                throw new NoSuchElementException("member not found memberId" + memberId);
+            }
+        } catch (SQLException e) {
+            log.error("db error", e);
+            throw e;
+        } finally {
+            close(con, pstmt, rs);
+        }
+    }
+
+   
 
     private void close(Connection con, Statement stmt, ResultSet rs) {
         if (rs != null) {
