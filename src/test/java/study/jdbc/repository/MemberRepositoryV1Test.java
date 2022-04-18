@@ -20,7 +20,9 @@ class MemberRepositoryV1Test {
 
     @BeforeEach
     void beforeEach() {
-        diverManageDatasource();
+        //diverManageDatasource();
+        hikariDataSource();
+
     }
 
     private void diverManageDatasource() {
@@ -29,7 +31,14 @@ class MemberRepositoryV1Test {
         repository = new MemberRepositoryV1(dataSource);
     }
 
-   
+    private void hikariDataSource() {
+        // 커넥션 풀링
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl(URL);
+        dataSource.setUsername(USERNAME);
+        dataSource.setPassword(PASSWORD);
+        repository = new MemberRepositoryV1(dataSource);
+    }
 
     @Test
     void crud() throws SQLException {
